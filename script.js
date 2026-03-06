@@ -4,18 +4,18 @@
 
 window.onload = function() {
 
-    // Haal naam uit URL
+    // 1️⃣ Naam ophalen uit URL
     const urlParams = new URLSearchParams(window.location.search);
     const naam = urlParams.get("naam") || "Werknemer";
     document.getElementById("titel").innerText = naam;
 
-    // Toon huidige datum
+    // 2️⃣ Huidige datum tonen
     const vandaag = new Date();
     document.getElementById("huidigeDatum").innerText = vandaag.toLocaleDateString("nl-NL", {
         weekday: "long", day: "numeric", month: "long", year: "numeric"
     });
 
-    // Render de kalender
+    // 3️⃣ Kalender renderen
     renderKalender();
 };
 
@@ -28,13 +28,13 @@ function renderKalender() {
 
     kalender.innerHTML = "";
 
-    // Maak 31 dagen
+    // 31 dagen
     for (let i = 1; i <= 31; i++) {
         const dag = document.createElement("div");
         dag.classList.add("dag");
         dag.textContent = i;
 
-        // Klikbare dag
+        // Klikbare dagen
         dag.addEventListener("click", () => toggleDag(dag));
 
         kalender.appendChild(dag);

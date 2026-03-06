@@ -1,7 +1,6 @@
 let werknemers = JSON.parse(localStorage.getItem("werknemers")) || [];
 let planning = JSON.parse(localStorage.getItem("planning")) || [];
 
-
 /* POSITIE SORTERING */
 const ranking = {
   "manager": 1,
@@ -15,19 +14,21 @@ const ranking = {
 
 function voegWerknemerToe() {
 
-  const naam = document.getElementById("naam").value;
-  const positie = document.getElementById("positie").value;
+  const naam = document.getElementById("nieuweNaam").value;
+  const winkel = document.getElementById("winkelSelect").value;
+  const type = document.getElementById("typeSelect").value;
 
   if (naam === "") return;
 
   werknemers.push({
     naam: naam,
-    positie: positie
+    winkel: winkel,
+    type: type
   });
 
   localStorage.setItem("werknemers", JSON.stringify(werknemers));
 
-  document.getElementById("naam").value = "";
+  document.getElementById("nieuweNaam").value = "";
 
   renderWerknemers();
 }
@@ -37,44 +38,89 @@ function voegWerknemerToe() {
 
 function renderWerknemers() {
 
-  const lijst = document.getElementById("werknemerslijst");
+  const lijst = document.getElementById("werknemersLijst");
 
   if (!lijst) return;
 
   lijst.innerHTML = "";
 
-  werknemers.sort((a,b) => ranking[a.positie] - ranking[b.positie]);
-
   werknemers.forEach(w => {
 
-    const div = document.createElement("div");
+    const li = document.createElement("li");
 
-    div.innerHTML = `<strong>${w.naam}</strong> - ${w.positie}`;
+    li.innerHTML = `<strong>${w.naam}</strong> - ${w.type} (${w.winkel})`;
 
-    lijst.appendChild(div);
+    lijst.appendChild(li);
 
   });
 
 }
 
 
-/* PLANNING TOEVOEGEN */
+/* KALENDER MAKEN */
 
-function voegPlanningToe() {
+function renderKalender() {
 
-  const naam = document.getElementById("planningNaam").value;
-  const datum = document.getElementById("planningDatum").value;
+  const kalender = document.getElementById("kalender");
 
-  if (!naam || !datum) return;
+  if (!kalender) return;
 
-  planning.push({
-    naam: naam,
-    datum: datum
+  kalender.innerHTML = "";
+
+  for (let i = 1; i <= 31; i++) {
+
+    const dag = document.createElement("div");
+
+    dag.className = "dag";
+
+    dag.innerText = i;
+
+    dag.onclick = function () {
+      toggleDag(dag, i);
+    };
+
+    kalender.appendChild(dag);
+
+  }
+
+}
+
+
+/* DAG STATUS WIJZIGEN */
+
+function toggleDag(element, dag) {
+
+  if (element.classList.contains("groen")) {
+    element.classList.remove("groen");
+    element.classList.add("geel");
+  }
+  else if (element.classList.contains("geel")) {
+    element.classList.remove("geel");
+    element.classList.add("rood");
+  }
+  else if (element.classList.contains("rood")) {
+    element.classList.remove("rood");
+  }
+  else {
+    element.classList.add("groen");
+  }
+
+}
+
+
+/* RESET PLANNING */
+
+function resetPlanning(){
+
+  const kalender = document.getElementById("kalender");
+
+  if(!kalender) return;
+
+  const dagen = kalender.querySelectorAll(".dag");
+
+  dagen.forEach(dag => {
+    dag.classList.remove("groen","geel","rood");
   });
-
-  localStorage.setItem("planning", JSON.stringify(planning));
-
-  renderPlanning();
 
 }
 
@@ -108,5 +154,10 @@ window.onload = function() {
 
   renderWerknemers();
   renderPlanning();
+
+  /* BELANGRIJKE FIX */
+  if(document.getElementById("kalender")){
+      renderKalender();
+  }
 
 };

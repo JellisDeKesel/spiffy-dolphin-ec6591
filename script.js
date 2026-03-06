@@ -2,10 +2,11 @@
 // Kalender & Werknemer pagina
 // =============================
 
-// Haal naam uit URL
-const urlParams = new URLSearchParams(window.location.search);
-const naam = urlParams.get("naam") || "Werknemer";
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = function() {
+
+    // Haal naam uit URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const naam = urlParams.get("naam") || "Werknemer";
     document.getElementById("titel").innerText = naam;
 
     // Toon huidige datum
@@ -14,9 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
         weekday: "long", day: "numeric", month: "long", year: "numeric"
     });
 
-    // Kalender renderen
+    // Render de kalender
     renderKalender();
-});
+};
 
 // =============================
 // Kalender functies
@@ -54,17 +55,16 @@ function toggleDag(element) {
     }
 }
 
+// =============================
+// Reset functie
+// =============================
 function resetPlanning() {
     if (!confirm("Ben je zeker dat je je planning wil resetten?")) return;
 
     const kalender = document.getElementById("kalender");
     if (!kalender) return;
 
-    // Verwijder alle kleuren
     kalender.querySelectorAll(".dag").forEach(dag => {
         dag.classList.remove("groen", "geel", "rood");
     });
-
-    // Optioneel: her-render kalender (kan je ook weglaten)
-    // renderKalender();
 }

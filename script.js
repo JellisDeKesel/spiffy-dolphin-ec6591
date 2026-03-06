@@ -1,120 +1,70 @@
-let werknemers = JSON.parse(localStorage.getItem("werknemers")) || [];
-let planning = JSON.parse(localStorage.getItem("planning")) || [];
+// =============================
+// Kalender & Werknemer pagina
+// =============================
 
+// Haal naam uit URL
+const urlParams = new URLSearchParams(window.location.search);
+const naam = urlParams.get("naam") || "Werknemer";
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("titel").innerText = naam;
 
-/* =========================
-   WERKNEMERS LADEN
-========================= */
-
-function renderWerknemers(){
-
-    const lijst = document.getElementById("werknemersLijst");
-    if(!lijst) return;
-
-    lijst.innerHTML = "";
-
-    werknemers.forEach(w => {
-
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${w.naam}</strong> - ${w.type || ""} (${w.winkel || ""})`;
-
-        lijst.appendChild(li);
-
+    // Toon huidige datum
+    const vandaag = new Date();
+    document.getElementById("huidigeDatum").innerText = vandaag.toLocaleDateString("nl-NL", {
+        weekday: "long", day: "numeric", month: "long", year: "numeric"
     });
 
-}
+    // Kalender renderen
+    renderKalender();
+});
 
-
-/* =========================
-   KALENDER MAKEN
-========================= */
-
-function renderKalender(){
-
+// =============================
+// Kalender functies
+// =============================
+function renderKalender() {
     const kalender = document.getElementById("kalender");
-
-    if(!kalender) return;
+    if (!kalender) return;
 
     kalender.innerHTML = "";
 
-    for(let i = 1; i <= 31; i++){
-
+    // Maak 31 dagen
+    for (let i = 1; i <= 31; i++) {
         const dag = document.createElement("div");
-
         dag.classList.add("dag");
+        dag.textContent = i;
 
-        dag.innerText = i;
-
-        dag.addEventListener("click", function(){
-            veranderStatus(dag);
-        });
+        // Klikbare dag
+        dag.addEventListener("click", () => toggleDag(dag));
 
         kalender.appendChild(dag);
-
     }
-
 }
 
-
-/* =========================
-   DAG STATUS WIJZIGEN
-========================= */
-
-function veranderStatus(element){
-
-    if(element.classList.contains("groen")){
+function toggleDag(element) {
+    if (element.classList.contains("groen")) {
         element.classList.remove("groen");
         element.classList.add("geel");
-    }
-    else if(element.classList.contains("geel")){
+    } else if (element.classList.contains("geel")) {
         element.classList.remove("geel");
         element.classList.add("rood");
-    }
-    else if(element.classList.contains("rood")){
+    } else if (element.classList.contains("rood")) {
         element.classList.remove("rood");
-    }
-    else{
+    } else {
         element.classList.add("groen");
     }
-
 }
 
+function resetPlanning() {
+    if (!confirm("Ben je zeker dat je je planning wil resetten?")) return;
 
-/* =========================
-   RESET PLANNING
-========================= */
-
-function resetPlanning(){
-
-    if(confirm("Ben je zeker dat je je planning wil resetten?")){
-
-        const kalender = document.getElementById("kalender");
-
-        if(!kalender) return;
-
-        kalender.innerHTML = "";
-
-        /* Kalender opnieuw maken */
-        renderKalender();
-
-    }
-
-}
-
-
-/* =========================
-   PAGINA LADEN
-========================= */
-
-document.addEventListener("DOMContentLoaded", function(){
-
-    renderWerknemers();
-
-    /* BELANGRIJKE FIX */
     const kalender = document.getElementById("kalender");
+    if (!kalender) return;
 
-    if(kalender){
-        renderKalender();
-    }
+    // Verwijder alle kleuren
+    kalender.querySelectorAll(".dag").forEach(dag => {
+        dag.classList.remove("groen", "geel", "rood");
+    });
 
-});
+    // Optioneel: her-render kalender (kan je ook weglaten)
+    // renderKalender();
+}
